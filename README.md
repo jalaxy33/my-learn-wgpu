@@ -1,6 +1,6 @@
 # My learn-wgpu projects
 
-A learning project for wgpu, a Rust graphics API. Based on the [learn-wgpu](https://sotrh.github.io/learn-wgpu/) tutorial series.
+My learning experience with the [learn-wgpu](https://sotrh.github.io/learn-wgpu/) tutorial series.
 
 ## Requirements
 
