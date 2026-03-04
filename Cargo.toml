@@ -1,0 +1,38 @@
+[workspace.package]
+edition = "2024"
+
+[workspace]
+resolver = "3"
+members = ["code/beginner/*"]
+
+
+[workspace.dependencies]
+anyhow = "*"
+winit = "*"
+env_logger = "*"
+log = "*"
+wgpu = "*"
+pollster = "*"
+
+# wasm32 dependencies
+console_error_panic_hook = "*"
+console_log = "*"
+wasm-bindgen = "*"
+wasm-bindgen-futures = "*"
+web-sys = "*"
+
+
+[profile.wasm-release]
+inherits = "release"
+debug = 0
+# strip 设置为 true 或 "debuginfo" 对 wasm 大小没有 > 0.1 MB 的影响
+strip = true
+lto = "fat"
+# lto = true # VERY slightly smaller wasm
+# opt-level = 's' # 10-30% smaller wasm compared to `opt-level = 3`
+# opt-level = 1 # very slow and big wasm. Don't do this.
+opt-level = 2 # fast and small wasm, basically same as `opt-level = 's'`
+# opt-level = 3 # unecessarily large wasm for no performance gain
+# debug = true # include debug symbols, useful when profiling wasm
+panic = "abort"
+codegen-units = 1
