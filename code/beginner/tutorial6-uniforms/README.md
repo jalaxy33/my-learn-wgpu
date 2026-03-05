@@ -17,3 +17,6 @@ Tutorial: [Uniform buffers and a 3d camera](https://sotrh.github.io/learn-wgpu/b
   ```
 
   Then open `code/beginner/tutorial6-uniforms/index.html` in a web browser.
+
+
+  > FIXME: This example does not work.
