@@ -14,6 +14,7 @@ log = "*"
 wgpu = "*"
 pollster = "*"
 bytemuck = "*"
+image = { version = "*", default-features = false}
 
 # wasm32 dependencies
 console_error_panic_hook = "*"
