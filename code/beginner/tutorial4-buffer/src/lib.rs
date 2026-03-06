@@ -232,9 +232,7 @@ impl State {
         }
     }
 
-    fn update(&mut self) {
-        // remove `todo!()`
-    }
+    fn update(&mut self) {}
 
     fn handle_key(&self, event_loop: &ActiveEventLoop, code: KeyCode, is_pressed: bool) {
         match (code, is_pressed) {
@@ -294,7 +292,6 @@ impl State {
             render_pass.draw_indexed(0..self.num_indices, 0, 0..1);
         }
 
-        // submit will accept anything that implements IntoIter
         self.queue.submit(std::iter::once(encoder.finish()));
         output.present();
 

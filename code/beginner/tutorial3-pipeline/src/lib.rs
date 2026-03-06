@@ -157,9 +157,7 @@ impl State {
         }
     }
 
-    fn update(&mut self) {
-        // remove `todo!()`
-    }
+    fn update(&mut self) {}
 
     fn handle_key(&self, event_loop: &ActiveEventLoop, code: KeyCode, is_pressed: bool) {
         match (code, is_pressed) {

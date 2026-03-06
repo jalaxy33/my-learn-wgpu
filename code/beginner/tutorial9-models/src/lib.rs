@@ -20,11 +20,11 @@ mod texture;
 use model::{DrawModel, Vertex};
 
 #[rustfmt::skip]
-pub const OPENGL_TO_WGPU_MATRIX: cgmath::Matrix4<f32> = cgmath::Matrix4::from_cols(
-    cgmath::Vector4::new(1.0, 0.0, 0.0, 0.0),
-    cgmath::Vector4::new(0.0, 1.0, 0.0, 0.0),
-    cgmath::Vector4::new(0.0, 0.0, 0.5, 0.0),
-    cgmath::Vector4::new(0.0, 0.0, 0.5, 1.0),
+pub const OPENGL_TO_WGPU_MATRIX: cgmath::Matrix4<f32> = cgmath::Matrix4::new(
+    1.0, 0.0, 0.0, 0.0,  //
+    0.0, 1.0, 0.0, 0.0,  // 
+    0.0, 0.0, 0.5, 0.5,  //
+    0.0, 0.0, 0.0, 1.0,  //
 );
 
 const NUM_INSTANCES_PER_ROW: u32 = 10;
@@ -43,20 +43,13 @@ impl Camera {
     fn build_view_projection_matrix(&self) -> cgmath::Matrix4<f32> {
         let view = cgmath::Matrix4::look_at_rh(self.eye, self.target, self.up);
         let proj = cgmath::perspective(cgmath::Deg(self.fovy), self.aspect, self.znear, self.zfar);
-
-        // The coordinate system in Wgpu is based on DirectX and Metal's coordinate systems.
-        // The `cgmath` crate is built for OpenGL's coordinate system.
-        return OPENGL_TO_WGPU_MATRIX * proj * view;
+        proj * view
     }
 }
 
-// We need this for Rust to store our data correctly for the shaders
 #[repr(C)]
-// This is so we can store this in a buffer
 #[derive(Debug, Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
 struct CameraUniform {
-    // We can't use cgmath with bytemuck directly, so we'll have
-    // to convert the Matrix4 into a 4x4 f32 array
     view_proj: [[f32; 4]; 4],
 }
 
@@ -69,7 +62,7 @@ impl CameraUniform {
     }
 
     fn update_view_proj(&mut self, camera: &Camera) {
-        self.view_proj = camera.build_view_projection_matrix().into();
+        self.view_proj = (OPENGL_TO_WGPU_MATRIX * camera.build_view_projection_matrix()).into();
     }
 }
 
@@ -213,11 +206,8 @@ pub struct State {
     config: wgpu::SurfaceConfiguration,
     is_surface_configured: bool,
     window: Arc<Window>,
-    obj_model: model::Model,
     render_pipeline: wgpu::RenderPipeline,
-    // #[allow(dead_code)]
-    // diffuse_texture: texture::Texture,
-    // diffuse_bind_group: wgpu::BindGroup,
+    obj_model: model::Model,
     camera: Camera,
     camera_uniform: CameraUniform,
     camera_controller: CameraController,
@@ -290,11 +280,6 @@ impl State {
             desired_maximum_frame_latency: 2,
         };
 
-        // let diffuse_bytes = include_bytes!("../res/happy-tree.png");
-        // let diffuse_texture =
-        //     texture::Texture::from_bytes(&device, &queue, diffuse_bytes, "../res/happy-tree.png")
-        //         .unwrap(); // CHANGED!
-
         let texture_bind_group_layout =
             device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
                 entries: &[
@@ -320,21 +305,6 @@ impl State {
                 label: Some("texture_bind_group_layout"),
             });
 
-        // let diffuse_bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-        //     layout: &texture_bind_group_layout,
-        //     entries: &[
-        //         wgpu::BindGroupEntry {
-        //             binding: 0,
-        //             resource: wgpu::BindingResource::TextureView(&diffuse_texture.view),
-        //         },
-        //         wgpu::BindGroupEntry {
-        //             binding: 1,
-        //             resource: wgpu::BindingResource::Sampler(&diffuse_texture.sampler),
-        //         },
-        //     ],
-        //     label: Some("diffuse_bind_group"),
-        // });
-
         let camera = Camera {
             // position the camera 1 unit up and 2 units back
             // +z is out of the screen
@@ -348,7 +318,13 @@ impl State {
             znear: 0.1,
             zfar: 100.0,
         };
-        let camera_controller = CameraController::new(0.01);
+
+        let camera_controller = if cfg!(target_arch = "wasm32") {
+            // faster movement on web
+            CameraController::new(0.8)
+        } else {
+            CameraController::new(0.01)
+        };
 
         let mut camera_uniform = CameraUniform::new();
         camera_uniform.update_view_proj(&camera);
@@ -502,10 +478,11 @@ impl State {
 
     pub fn resize(&mut self, width: u32, height: u32) {
         if width > 0 && height > 0 {
+            self.is_surface_configured = true;
             self.config.width = width;
             self.config.height = height;
             self.surface.configure(&self.device, &self.config);
-            self.is_surface_configured = true;
+            self.camera.aspect = width as f32 / height as f32;
             self.depth_texture =
                 texture::Texture::create_depth_texture(&self.device, &self.config, "depth_texture");
         }

@@ -15,13 +15,6 @@ use winit::{
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
-const NUM_INSTANCES_PER_ROW: u32 = 10;
-const INSTANCE_DISPLACEMENT: cgmath::Vector3<f32> = cgmath::Vector3::new(
-    NUM_INSTANCES_PER_ROW as f32 * 0.5,
-    0.0,
-    NUM_INSTANCES_PER_ROW as f32 * 0.5,
-);
-
 #[repr(C)]
 #[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
 struct Vertex {
@@ -82,11 +75,18 @@ const INDICES: &[u16] = &[
 ];
 
 #[rustfmt::skip]
-pub const OPENGL_TO_WGPU_MATRIX: cgmath::Matrix4<f32> = cgmath::Matrix4::from_cols(
-    cgmath::Vector4::new(1.0, 0.0, 0.0, 0.0),
-    cgmath::Vector4::new(0.0, 1.0, 0.0, 0.0),
-    cgmath::Vector4::new(0.0, 0.0, 0.5, 0.0),
-    cgmath::Vector4::new(0.0, 0.0, 0.5, 1.0),
+pub const OPENGL_TO_WGPU_MATRIX: cgmath::Matrix4<f32> = cgmath::Matrix4::new(
+    1.0, 0.0, 0.0, 0.0,  //
+    0.0, 1.0, 0.0, 0.0,  // 
+    0.0, 0.0, 0.5, 0.5,  //
+    0.0, 0.0, 0.0, 1.0,  //
+);
+
+const NUM_INSTANCES_PER_ROW: u32 = 10;
+const INSTANCE_DISPLACEMENT: cgmath::Vector3<f32> = cgmath::Vector3::new(
+    NUM_INSTANCES_PER_ROW as f32 * 0.5,
+    0.0,
+    NUM_INSTANCES_PER_ROW as f32 * 0.5,
 );
 
 struct Camera {
@@ -103,20 +103,13 @@ impl Camera {
     fn build_view_projection_matrix(&self) -> cgmath::Matrix4<f32> {
         let view = cgmath::Matrix4::look_at_rh(self.eye, self.target, self.up);
         let proj = cgmath::perspective(cgmath::Deg(self.fovy), self.aspect, self.znear, self.zfar);
-
-        // The coordinate system in Wgpu is based on DirectX and Metal's coordinate systems.
-        // The `cgmath` crate is built for OpenGL's coordinate system.
-        return OPENGL_TO_WGPU_MATRIX * proj * view;
+        proj * view
     }
 }
 
-// We need this for Rust to store our data correctly for the shaders
 #[repr(C)]
-// This is so we can store this in a buffer
 #[derive(Debug, Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
 struct CameraUniform {
-    // We can't use cgmath with bytemuck directly, so we'll have
-    // to convert the Matrix4 into a 4x4 f32 array
     view_proj: [[f32; 4]; 4],
 }
 
@@ -129,7 +122,7 @@ impl CameraUniform {
     }
 
     fn update_view_proj(&mut self, camera: &Camera) {
-        self.view_proj = camera.build_view_projection_matrix().into();
+        self.view_proj = (OPENGL_TO_WGPU_MATRIX * camera.build_view_projection_matrix()).into();
     }
 }
 
@@ -175,7 +168,6 @@ impl CameraController {
     }
 
     fn update_camera(&self, camera: &mut Camera) {
-        use cgmath::InnerSpace;
         let forward = camera.target - camera.eye;
         let forward_norm = forward.normalize();
         let forward_mag = forward.magnitude();
@@ -360,7 +352,7 @@ impl State {
             diffuse_bytes,
             "../assets/happy-tree.png",
         )
-        .unwrap(); // CHANGED!
+        .unwrap();
 
         let texture_bind_group_layout =
             device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
@@ -415,7 +407,13 @@ impl State {
             znear: 0.1,
             zfar: 100.0,
         };
-        let camera_controller = CameraController::new(0.01);
+
+        let camera_controller = if cfg!(target_arch = "wasm32") {
+            // faster movement on web
+            CameraController::new(0.8)
+        } else {
+            CameraController::new(0.01)
+        };
 
         let mut camera_uniform = CameraUniform::new();
         camera_uniform.update_view_proj(&camera);
@@ -582,10 +580,11 @@ impl State {
 
     pub fn resize(&mut self, width: u32, height: u32) {
         if width > 0 && height > 0 {
+            self.is_surface_configured = true;
             self.config.width = width;
             self.config.height = height;
             self.surface.configure(&self.device, &self.config);
-            self.is_surface_configured = true;
+            self.camera.aspect = width as f32 / height as f32;
             self.depth_texture =
                 texture::Texture::create_depth_texture(&self.device, &self.config, "depth_texture");
         }

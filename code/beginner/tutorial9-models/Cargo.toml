@@ -16,7 +16,7 @@ wgpu = "*"
 bytemuck = { version = "*", features = ["derive"] }
 image = { version = "*", features = ["png", "jpeg"] }
 cgmath = "*"
-tobj = { version = "*", features = ["async"] }
+tobj = { version = "*", default-features = false, features = ["async"] }
 
 
 [build-dependencies]

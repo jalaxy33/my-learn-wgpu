@@ -43,7 +43,6 @@ impl Vertex {
 }
 
 const VERTICES: &[Vertex] = &[
-    // Changed
     Vertex {
         position: [-0.0868241, 0.49240386, 0.0],
         tex_coords: [0.4131759, 0.00759614],
@@ -84,9 +83,9 @@ pub struct State {
     vertex_buffer: wgpu::Buffer,
     index_buffer: wgpu::Buffer,
     num_indices: u32,
-    diffuse_bind_group: wgpu::BindGroup,
     #[allow(dead_code)]
     diffuse_texture: texture::Texture,
+    diffuse_bind_group: wgpu::BindGroup,
 }
 
 impl State {
@@ -158,7 +157,7 @@ impl State {
             diffuse_bytes,
             "../assets/happy-tree.png",
         )
-        .unwrap(); // CHANGED!
+        .unwrap();
 
         let texture_bind_group_layout =
             device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
@@ -276,8 +275,8 @@ impl State {
             vertex_buffer,
             index_buffer,
             num_indices,
-            diffuse_bind_group,
             diffuse_texture,
+            diffuse_bind_group,
         })
     }
 
@@ -290,9 +289,7 @@ impl State {
         }
     }
 
-    fn update(&mut self) {
-        // remove `todo!()`
-    }
+    fn update(&mut self) {}
 
     fn handle_key(&self, event_loop: &ActiveEventLoop, code: KeyCode, is_pressed: bool) {
         match (code, is_pressed) {
