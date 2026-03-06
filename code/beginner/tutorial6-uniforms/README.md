@@ -12,8 +12,18 @@ Tutorial: [Uniform buffers and a 3d camera](https://sotrh.github.io/learn-wgpu/b
 
 - Build webassembly:
 
-  ```sh
-  wasm-pack build --target web code/beginner/tutorial6-uniforms
-  ```
+  1. Build the wasm:
 
-  Then open `code/beginner/tutorial6-uniforms/index.html` in a web browser.
+      ```sh
+      wasm-pack build --target web code/beginner/tutorial6-uniforms
+      ```
+
+  2. Serve the files
+   
+      Open `code/beginner/tutorial6-uniforms/index.html` in a web browser. Or server the project directory:
+
+      ```sh
+      python3 -m http.server 8080 -d code/beginner/tutorial6-uniforms 
+      ```
+
+      Then open `http://localhost:8080` in web browser.

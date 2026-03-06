@@ -12,9 +12,19 @@ Tutorial: [Instancing](https://sotrh.github.io/learn-wgpu/beginner/tutorial7-ins
 
 - Build webassembly:
 
-  ```sh
-  wasm-pack build --target web code/beginner/tutorial7-instancing
-  ```
+  1. Build the wasm:
 
-  Then open `code/beginner/tutorial7-instancing/index.html` in a web browser.
+      ```sh
+      wasm-pack build --target web code/beginner/tutorial7-instancing
+      ```
+
+  2. Serve the files
+   
+      Open `code/beginner/tutorial7-instancing/index.html` in a web browser. Or server the project directory:
+
+      ```sh
+      python3 -m http.server 8080 -d code/beginner/tutorial7-instancing 
+      ```
+
+      Then open `http://localhost:8080` in web browser.
 

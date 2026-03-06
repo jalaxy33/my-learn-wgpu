@@ -12,8 +12,19 @@ Tutorial: [Dependencies and the window](https://sotrh.github.io/learn-wgpu/begin
 
 - Build webassembly:
 
-  ```sh
-  wasm-pack build --target web code/beginner/tutorial1-window
-  ```
+  1. Build the wasm:
 
-  Then open `code/beginner/tutorial1-window/index.html` in a web browser.
+      ```sh
+      wasm-pack build --target web code/beginner/tutorial1-window
+      ```
+
+  2. Serve the files
+   
+      Open `code/beginner/tutorial1-window/index.html` in a web browser. Or server the project directory:
+
+      ```sh
+      python3 -m http.server 8080 -d code/beginner/tutorial1-window 
+      ```
+
+      Then open `http://localhost:8080` in web browser.
+
