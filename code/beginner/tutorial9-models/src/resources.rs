@@ -8,11 +8,13 @@ use crate::{model, texture};
 fn format_url(file_name: &str) -> reqwest::Url {
     let window = web_sys::window().unwrap();
     let location = window.location();
-    let mut origin = location.origin().unwrap();
-    if !origin.ends_with("learn-wgpu") {
-        origin = format!("{}/learn-wgpu", origin);
-    }
-    let base = reqwest::Url::parse(&format!("{}/", origin,)).unwrap();
+    let origin = location.origin().unwrap();
+    let pathname = location.pathname().unwrap();
+    let base_path = pathname
+        .rfind('/')
+        .map(|i| &pathname[..=i])
+        .unwrap_or("/");
+    let base = reqwest::Url::parse(&format!("{}{}", origin, base_path)).unwrap();
     base.join(file_name).unwrap()
 }
 
@@ -24,9 +26,7 @@ pub async fn load_string(file_name: &str) -> anyhow::Result<String> {
     };
     #[cfg(not(target_arch = "wasm32"))]
     let txt = {
-        let path = std::path::Path::new(env!("OUT_DIR"))
-            .join("res")
-            .join(file_name);
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(file_name);
         std::fs::read_to_string(path)?
     };
 
@@ -41,9 +41,7 @@ pub async fn load_binary(file_name: &str) -> anyhow::Result<Vec<u8>> {
     };
     #[cfg(not(target_arch = "wasm32"))]
     let data = {
-        let path = std::path::Path::new(env!("OUT_DIR"))
-            .join("res")
-            .join(file_name);
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(file_name);
         std::fs::read(path)?
     };
 
@@ -69,6 +67,11 @@ pub async fn load_model(
     let obj_cursor = Cursor::new(obj_text);
     let mut obj_reader = BufReader::new(obj_cursor);
 
+    let res_dir = std::path::Path::new(file_name)
+        .parent()
+        .unwrap_or_else(|| std::path::Path::new(""))
+        .to_path_buf();
+
     #[allow(deprecated)]
     let (models, obj_materials) = tobj::load_obj_buf_async(
         &mut obj_reader,
@@ -77,22 +80,24 @@ pub async fn load_model(
             single_index: true,
             ..Default::default()
         },
-        |p| async move {
-            let mat_text = load_string(&p).await.unwrap();
-            tobj::load_mtl_buf(&mut BufReader::new(Cursor::new(mat_text)))
+        |p| {
+            let mat_path = res_dir.join(&p);
+            async move {
+                let mat_text = load_string(mat_path.to_str().unwrap()).await.unwrap();
+                tobj::load_mtl_buf(&mut BufReader::new(Cursor::new(mat_text)))
+            }
         },
     )
     .await?;
 
     let mut materials = Vec::new();
     for m in obj_materials? {
-        let diffuse_texture = load_texture(
-            &m.diffuse_texture
-                .ok_or(anyhow::anyhow!("Missing diffuse texture"))?,
-            device,
-            queue,
-        )
-        .await?;
+        let tex_name = m
+            .diffuse_texture
+            .ok_or(anyhow::anyhow!("Missing diffuse texture"))?;
+        let tex_path = res_dir.join(&tex_name);
+        let diffuse_texture =
+            load_texture(tex_path.to_str().unwrap(), device, queue).await?;
         let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
             layout,
             entries: &[

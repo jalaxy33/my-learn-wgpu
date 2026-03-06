@@ -390,7 +390,7 @@ impl State {
         });
 
         let obj_model =
-            resources::load_model("cube.obj", &device, &queue, &texture_bind_group_layout)
+            resources::load_model("res/cube.obj", &device, &queue, &texture_bind_group_layout)
                 .await
                 .unwrap();
 
