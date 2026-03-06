@@ -20,7 +20,7 @@ Tutorial: [The Depth Buffer](https://sotrh.github.io/learn-wgpu/beginner/tutoria
 
   2. Serve the files
    
-      Open `code/beginner/tutorial8-depth/index.html` in a web browser. Or server the project directory:
+      Open `code/beginner/tutorial8-depth/index.html` in a web browser. Or run a local HTTP server:
 
       ```sh
       python3 -m http.server 8080 -d code/beginner/tutorial8-depth 

@@ -20,7 +20,7 @@ Tutorial: [The Pipeline](https://sotrh.github.io/learn-wgpu/beginner/tutorial3-p
 
   2. Serve the files
    
-      Open `code/beginner/tutorial3-pipeline/index.html` in a web browser. Or server the project directory:
+      Open `code/beginner/tutorial3-pipeline/index.html` in a web browser. Or run a local HTTP server:
 
       ```sh
       python3 -m http.server 8080 -d code/beginner/tutorial3-pipeline 
