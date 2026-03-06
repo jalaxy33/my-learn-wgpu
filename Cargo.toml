@@ -9,7 +9,6 @@ members = ["code/beginner/*"]
 [profile.wasm-release]
 inherits = "release"
 debug = 0
-# strip 设置为 true 或 "debuginfo" 对 wasm 大小没有 > 0.1 MB 的影响
 strip = true
 lto = "fat"
 # lto = true # VERY slightly smaller wasm
