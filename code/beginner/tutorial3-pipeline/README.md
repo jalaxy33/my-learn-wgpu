@@ -26,7 +26,7 @@ Tutorial: [The Pipeline](https://sotrh.github.io/learn-wgpu/beginner/tutorial3-p
      # install `simple-http-server` if you don't have it
      cargo install simple-http-server
 
-     simple-http-server -i -p 8080 code/beginner/tutorial3-pipeline
+     simple-http-server -i --nocache -p 8080 code/beginner/tutorial3-pipeline
      ```
 
      Then open `http://localhost:8080` in web browser.
