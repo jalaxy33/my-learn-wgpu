@@ -11,20 +11,22 @@ Tutorial: [Model Loading](https://sotrh.github.io/learn-wgpu/beginner/tutorial9-
   ```
 
 - Build webassembly:
-
   1. Build the wasm:
 
-      ```sh
-      wasm-pack build --target web code/beginner/tutorial9-models
-      ```
+     ```sh
+     wasm-pack build --target web code/beginner/tutorial9-models
+     ```
 
-  2. Serve the files
-   
-      Open `code/beginner/tutorial9-models/index.html` in a web browser. Or run a local HTTP server:
+  2. Launch a web server:
 
-      ```sh
-      python3 -m http.server 8080 -d code/beginner/tutorial9-models 
-      ```
+     Open `code/beginner/tutorial9-models/index.html` in a web browser.
+     Or run a local HTTP server:
 
-      Then open `http://localhost:8080` in web browser.
+     ```sh
+     # install `simple-http-server` if you don't have it
+     cargo install simple-http-server
 
+     simple-http-server -i -p 8080 code/beginner/tutorial9-models
+     ```
+
+     Then open `http://localhost:8080` in web browser.

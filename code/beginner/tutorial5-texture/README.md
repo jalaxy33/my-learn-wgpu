@@ -11,20 +11,22 @@ Tutorial: [Textures and bind groups](https://sotrh.github.io/learn-wgpu/beginner
   ```
 
 - Build webassembly:
-
   1. Build the wasm:
 
-      ```sh
-      wasm-pack build --target web code/beginner/tutorial5-texture
-      ```
+     ```sh
+     wasm-pack build --target web code/beginner/tutorial5-texture
+     ```
 
-  2. Serve the files
-   
-      Open `code/beginner/tutorial5-texture/index.html` in a web browser. Or run a local HTTP server:
+  2. Launch a web server:
 
-      ```sh
-      python3 -m http.server 8080 -d code/beginner/tutorial5-texture 
-      ```
+     Open `code/beginner/tutorial5-texture/index.html` in a web browser.
+     Or run a local HTTP server:
 
-      Then open `http://localhost:8080` in web browser.
+     ```sh
+     # install `simple-http-server` if you don't have it
+     cargo install simple-http-server
 
+     simple-http-server -i -p 8080 code/beginner/tutorial5-texture
+     ```
+
+     Then open `http://localhost:8080` in web browser.

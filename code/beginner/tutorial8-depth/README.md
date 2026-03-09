@@ -11,19 +11,22 @@ Tutorial: [The Depth Buffer](https://sotrh.github.io/learn-wgpu/beginner/tutoria
   ```
 
 - Build webassembly:
-
   1. Build the wasm:
 
-      ```sh
-      wasm-pack build --target web code/beginner/tutorial8-depth
-      ```
+     ```sh
+     wasm-pack build --target web code/beginner/tutorial8-depth
+     ```
 
-  2. Serve the files
-   
-      Open `code/beginner/tutorial8-depth/index.html` in a web browser. Or run a local HTTP server:
+  2. Launch a web server:
 
-      ```sh
-      python3 -m http.server 8080 -d code/beginner/tutorial8-depth 
-      ```
+     Open `code/beginner/tutorial8-depth/index.html` in a web browser.
+     Or run a local HTTP server:
 
-      Then open `http://localhost:8080` in web browser.
+     ```sh
+     # install `simple-http-server` if you don't have it
+     cargo install simple-http-server
+
+     simple-http-server -i -p 8080 code/beginner/tutorial8-depth
+     ```
+
+     Then open `http://localhost:8080` in web browser.
