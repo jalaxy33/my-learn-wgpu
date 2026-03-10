@@ -3377,6 +3377,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "tutorial13-hdr"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "bytemuck",
+ "cgmath",
+ "console_error_panic_hook",
+ "console_log",
+ "env_logger",
+ "image",
+ "instant",
+ "log",
+ "pollster",
+ "reqwest",
+ "tobj",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+ "wgpu",
+ "winit",
+]
+
+[[package]]
 name = "tutorial2-surface"
 version = "0.1.0"
 dependencies = [
