@@ -39,3 +39,7 @@ web-sys = { version = "*", features = [
 ] }
 reqwest = "*"
 instant = { version = "*", features = ["wasm-bindgen"] }
+
+
+[features]
+debug = []

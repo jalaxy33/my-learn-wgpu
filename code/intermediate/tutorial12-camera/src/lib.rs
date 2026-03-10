@@ -604,9 +604,7 @@ impl State {
 
             render_pass.set_pipeline(&self.render_pipeline);
 
-            #[allow(non_snake_case)]
-            let DEBUG = false;
-            if DEBUG {
+            if cfg!(feature = "debug") {
                 // use debug material
                 render_pass.draw_model_instanced_with_material(
                     &self.obj_model,
