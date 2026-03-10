@@ -8,25 +8,25 @@ crate-type = ["cdylib", "rlib"]
 
 
 [dependencies]
-anyhow = "*"
-winit = { version = "*", features = ["android-native-activity"] }
-env_logger = "*"
-log = "*"
-wgpu = "*"
-bytemuck = { version = "*", features = ["derive"] }
-image = { version = "*", features = ["png", "jpeg"] }
-cgmath = "*"
+anyhow.workspace = true
+winit = { workspace = true, features = ["android-native-activity"] }
+env_logger.workspace = true
+log.workspace = true
+wgpu.workspace = true
+bytemuck = { workspace = true, features = ["derive"] }
+image = { workspace = true, features = ["png", "jpeg"] }
+cgmath.workspace = true
 
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 # pollster causes wasm loading errors - only include for native targets
-pollster = "*"
+pollster.workspace = true
 
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-console_error_panic_hook = "*"
-console_log = "*"
-wgpu = { version = "*", features = ["webgl"] }
-wasm-bindgen = "*"
-wasm-bindgen-futures = "*"
-web-sys = { version = "*", features = ["Document", "Window", "Element"] }
+console_error_panic_hook.workspace = true
+console_log.workspace = true
+wgpu = { workspace = true, features = ["webgl"] }
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true
+web-sys = { workspace = true, features = ["Document", "Window", "Element"] }
